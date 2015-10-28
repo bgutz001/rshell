@@ -5,6 +5,7 @@
 #include <sys/wait.h>
 #include <sys/types.h>
 #include <stdlib.h>
+#include "tokenClass.h"
 
 const int HOSTNAME_LENGTH = 16;
 
@@ -27,33 +28,50 @@ int main() {
 		if (userInput == "exit") exit(EXIT_SUCCESS);
 
 		//pass input to tokenizer
+		Token fullCommand(userInput);
+
+		//execute commands
+		execute(fullCommand.getCommand(0));		
 	}
     return 0;
 }
 
+//parameter: command list you want to execute, last char* should be null
+//return: returns -1 if command failed
+//return: returns -2 if child proccess was killed
+//return: returns 0 if command succeeded
+//Description: executes a program in /bin/sh/ on a child process
 int execute(char* command[]) {
-	pid_t pid;
+
+	pid_t pid; //process id for child
+	int returnValue = 0;
 	int status = 0;
+
 	if ((pid = fork()) < 0) {
 		std::cout << "Failed to create child proccess" << std::endl;
 		perror(0);
-		return -1;
+		returnValue = -1;
 	}
-	if (pid == 0) { //child
+	else if (pid == 0) { //the child process
 		if (execvp(command[0], command) == -1) {
+			returnValue = -1;
 			std::cout << "Command failed" << std::endl;
 			perror(0);
 			exit(EXIT_FAILURE);
 		}
 		exit(EXIT_SUCCESS);
 	}
-	else { // parent
-		
-			while(waitpid(pid, &status, 0) != pid);
-	
-		return 0;
+	else { //the parent process
+		//wait until the child process has exited
+		do {
+			bool continue = (waitpid(pid, &status, 0) != pid);
+			if (WIFSIGNALED(status)) {
+				returnValue = -2;
+			}	
+		} while(continue)
 	}
-	return 0;
+
+	return returnValue;
 }
 
 std::string input() {
