@@ -14,12 +14,6 @@ std::string getUsername();
 std::string getHostname();
 
 int main() {
-	/*
-	char* temp[] = {"pwd", 0};
-	execute(temp);
-	char* temp2[] = {"exit", 0};
-	execute(temp2);
-	*/
 
 	std::string username = getUsername();
 	std::string hostname = getHostname();
@@ -28,13 +22,16 @@ int main() {
 		std::string userInput;
 		std::cout << username << '@' << hostname << "$ ";	
 		userInput = input(); 
+
+		//handle exit
+		if (userInput == "exit") exit(EXIT_SUCCESS);
+
+		//pass input to tokenizer
 	}
     return 0;
 }
 
 int execute(char* command[]) {
-	// Handle 'exit'
-	if (command[0] == "exit") exit(EXIT_SUCCESS);
 	pid_t pid;
 	int status = 0;
 	if ((pid = fork()) < 0) {
