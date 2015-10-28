@@ -1,21 +1,33 @@
 #include <iostream>
+#include <cstring>
 #include <cstdio>
 #include <unistd.h>
 #include <sys/wait.h>
 #include <sys/types.h>
 #include <stdlib.h>
 
+const int HOSTNAME_LENGTH = 16;
+
 int execute(char* command[]);
 std::string input();
+std::string getUsername();
+std::string getHostname();
 
 int main() {
-	char* temp[] = {"ls", "-a", 0};
+	/*
+	char* temp[] = {"pwd", 0};
 	execute(temp);
 	char* temp2[] = {"exit", 0};
 	execute(temp2);
+	*/
+
+	std::string username = getUsername();
+	std::string hostname = getHostname();
 
 	while (true) {
-		
+		std::string userInput;
+		std::cout << username << '@' << hostname << "$ ";	
+		userInput = input(); 
 	}
     return 0;
 }
@@ -51,4 +63,22 @@ std::string input() {
 	std::string temp;
 	std::getline(std::cin, temp);
 	return temp;
+}
+
+std::string getUsername() {
+	char* uname;
+	if (!(uname = getlogin())) {
+		uname = (char*) "unkown";
+		perror(0);
+	}
+	return uname;
+}
+
+std::string getHostname() {
+	char hname[HOSTNAME_LENGTH];
+	if (gethostname(hname, HOSTNAME_LENGTH)) {
+		strcpy(hname, "unkown");
+		perror(0);
+	}
+	return hname;
 }
