@@ -2,6 +2,17 @@
 Token::Token()
 { } 
 
+Token::~Token() {
+    if(c_command != 0 ) {
+    	//int x2 = sizeof(c_command) / sizeof(*c_command);
+	//for(int i = 0; i <= x2; i++) {
+	  //  delete [] c_command[i];
+	//}
+	delete[] c_command;
+	c_command = 0;
+    }
+} 
+
 Token::Token(std::string str){
     //deletes comments. Might need to change
     if(std::string::npos != str.find('#')) {
@@ -22,15 +33,16 @@ Token::Token(std::string str){
 
     //while loop. this tokenizes then handles connectors
     while(std::getline(iss, command.at(j).at(i), ' ')) {
+//	std::cout << command.at(j).at(i) << std::endl;
 	//connector handling
 	if(command.at(j).at(i) == "||" || command.at(j).at(i) == "&&" || 
 	    command.at(j).at(i) == ";") {
 		if(command.at(j).at(i) == "||") connector.push_back("ORTRUE");
 		if(command.at(j).at(i) == "&&") connector.push_back("ANDTRUE");
-		else connector.push_back("CONTINUE");
+		if(command.at(j).at(i) == ";")  connector.push_back("CONTINUE");
 	    
 	    //deletes connecotr in the vector
-	    command.at(j).resize(i - 1);
+	    command.at(j).resize(i);
 	    j++;
 	    
 	    //resizes first vector
@@ -43,22 +55,33 @@ Token::Token(std::string str){
 	if(i == command.at(j).size()) {
 	    command.at(j).push_back("");
 	}
-    }
-    
+    } 
     //deletes hanging vector
     command.at(j).pop_back();
     connector.push_back("STOP");
+    
+    //sets up the c_command to be copied
+    c_command = 0;
 }
 
-char** Token::getCommand(int x, char ** &c_command) {
+char** Token::getCommand(int x) {
     //Not entirely sure about this top line, but ensures c_command is empty to begin with
-    //delete [] c_command;
+    char** deleter = c_command;
     c_command = new char*[command.at(x).size()];
     for( int i = 0; i < command.at(x).size(); i++) {
 	c_command[i] = new char[command.at(x).at(i).length() + 1];
 	strcpy(c_command[i], command.at(x).at(i).c_str());
     }
-//    c_command = temp;
+    //removing old array
+    int x2 = sizeof(deleter) / sizeof(*deleter);
+    //int y = sizeof(*deleter) / sizeof(**deleter);
+    if(deleter == 0) { return c_command;}
+    //for(int i = 0; i <= x2; i++) {
+//	delete [] deleter[i];
+  //  }
+    delete[] deleter;
+    deleter = 0;
+    //    c_command = temp;
     return c_command;
 } 
 
