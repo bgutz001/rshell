@@ -50,10 +50,21 @@ Token::Token(std::string str){
     connector.push_back("STOP");
 }
 
-std::vector<std::string> Token::getCommand(int x) {
-    return command.at(x);
+char** Token::getCommand(int x, char ** &c_command) {
+    //Not entirely sure about this top line, but ensures c_command is empty to begin with
+    //delete [] c_command;
+    c_command = new char*[command.at(x).size()];
+    for( int i = 0; i < command.at(x).size(); i++) {
+	c_command[i] = new char[command.at(x).at(i).length() + 1];
+	strcpy(c_command[i], command.at(x).at(i).c_str());
+    }
+//    c_command = temp;
+    return c_command;
 } 
 
+std::vector<std::string> Token::getVCommand(int x) {
+    return command.at(x);
+}
 int Token::getNumCommand() {
     return command.size();
 }

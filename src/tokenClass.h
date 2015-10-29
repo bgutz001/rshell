@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <cstring>
 class Token {
     public:
 	//DO NOT CALL THIS ONE
@@ -11,13 +12,16 @@ class Token {
 	//string is the string to be tokenized
 	Token(std::string);
 	//the int is the number of the command accessed. 
-	std::vector<std::string> getCommand(int);
+	char** getCommand(int,char** &);
+	//returns Vector Command
+	std::vector<std::string> getVCommand(int);
 	//gets the number of commands
 	int getNumCommand();
 	//gets the corresponding connector value
 	std::string getConnector(int);
     private:
     	std::vector<std::vector<std::string> > command;
+//	char** c_command;
 	std::vector<std::string> connector;
 };
 

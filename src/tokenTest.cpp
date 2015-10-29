@@ -4,11 +4,13 @@
 int main() {
     Token a("ls -a || pwd && echo -e help");
    // std::cout << a.getCommand(0).size() << std::endl;  
+    char** b;
     for(int i = 0; i < a.getNumCommand(); i++) {
-	for(int j = 0; j < a.getCommand(i).size(); j++) {
-	    std::cout << a.getCommand(i).at(j) << std::endl;
+	for(int j = 0; j < a.getVCommand(i).size(); j++) {
+	    a.getCommand[i,b];
+	    std::cout << b << std::endl;
 	}  
     }
-
+    //a.getCommand(0, b);
 //    std::couts << a.getCommand(0).at(0) << std::endl;
 }
