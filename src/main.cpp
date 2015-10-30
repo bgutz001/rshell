@@ -32,6 +32,7 @@ int main() {
 
 		//execute commands
 		execute(fullCommand.getCommand(0));		
+			//std::cout << fullCommand.getCommand(0)[0] << std::endl;
 	}
     return 0;
 }
@@ -63,12 +64,24 @@ int execute(char* command[]) {
 	}
 	else { //the parent process
 		//wait until the child process has exited
+		bool loop;
 		do {
-			bool continue = (waitpid(pid, &status, 0) != pid);
+			int p = waitpid(pid, &status, 0);
+
+			loop = (p != pid);
+
+			//handles errors and exit statuses
+			if (p == -1) {
+				returnValue = -2;
+				loop = false;
+				perror(0);
+			}
+			
 			if (WIFSIGNALED(status)) {
 				returnValue = -2;
 			}	
-		} while(continue)
+
+		} while(loop);
 	}
 
 	return returnValue;

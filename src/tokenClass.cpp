@@ -4,10 +4,7 @@ Token::Token()
 
 Token::~Token() {
     if(c_command != 0 ) {
-    	//int x2 = sizeof(c_command) / sizeof(*c_command);
-	//for(int i = 0; i <= x2; i++) {
-	  //  delete [] c_command[i];
-	//}
+ 	delete[] *c_command;
 	delete[] c_command;
 	c_command = 0;
     }
@@ -33,30 +30,30 @@ Token::Token(std::string str){
 
     //while loop. this tokenizes then handles connectors
     while(std::getline(iss, command.at(j).at(i), ' ')) {
-//	std::cout << command.at(j).at(i) << std::endl;
-	//connector handling
-	if(command.at(j).at(i) == "||" || command.at(j).at(i) == "&&" || 
-	    command.at(j).at(i) == ";") {
-		if(command.at(j).at(i) == "||") connector.push_back("ORTRUE");
-		if(command.at(j).at(i) == "&&") connector.push_back("ANDTRUE");
-		if(command.at(j).at(i) == ";")  connector.push_back("CONTINUE");
+		if(command.at(j).at(i) == "||" || command.at(j).at(i) == "&&" || command.at(j).at(i) == ";") {
+			if(command.at(j).at(i) == "||") connector.push_back("ORTRUE");
+			if(command.at(j).at(i) == "&&") connector.push_back("ANDTRUE");
+			if(command.at(j).at(i) == ";")  connector.push_back("CONTINUE");
 	    
-	    //deletes connecotr in the vector
-	    command.at(j).resize(i);
-	    j++;
+			//deletes connecotr in the vector
+			command.at(j).pop_back();
+			j++;
 	    
-	    //resizes first vector
-	    if(j == command.size()) command.resize(j + 1, std::vector<std::string>(1));
-	    //will be incremented in after if escape
-	    i = -1;
-	}
-    	i++; 
-	//resizes second vector
-	if(i == command.at(j).size()) {
-	    command.at(j).push_back("");
-	}
+			//resizes first vector
+			if(j == command.size()) command.resize(j + 1, std::vector<std::string>(1));
+
+			//will be incremented in after if escape
+			i = -1;
+		}
+		i++; 
+
+		//resizes second vector
+		if(i == command.at(j).size()) {
+			command.at(j).push_back("");
+		}
     } 
-    //deletes hanging vector
+    
+	//deletes hanging vector
     command.at(j).pop_back();
     connector.push_back("STOP");
     
@@ -65,23 +62,25 @@ Token::Token(std::string str){
 }
 
 char** Token::getCommand(int x) {
-    //Not entirely sure about this top line, but ensures c_command is empty to begin with
+    //deletes the old c_command
     char** deleter = c_command;
-    c_command = new char*[command.at(x).size()];
-    for( int i = 0; i < command.at(x).size(); i++) {
-	c_command[i] = new char[command.at(x).at(i).length() + 1];
-	strcpy(c_command[i], command.at(x).at(i).c_str());
+    
+	c_command = new char*[command.at(x).size() + 1];
+ 
+	for( int i = 0; i < command.at(x).size(); i++) {
+		c_command[i] = new char[command.at(x).at(i).length() + 1];
+		strcpy(c_command[i], command.at(x).at(i).c_str());
     }
-    //removing old array
-    int x2 = sizeof(deleter) / sizeof(*deleter);
-    //int y = sizeof(*deleter) / sizeof(**deleter);
+   
+	//adds null pointer
+	c_command[command.at(x).size()] = 0;
+
+	//removing old array    
     if(deleter == 0) { return c_command;}
-    //for(int i = 0; i <= x2; i++) {
-//	delete [] deleter[i];
-  //  }
-    delete[] deleter;
+    delete[] *deleter;
+//	delete[] *deleter + 1;
+	delete[] deleter;
     deleter = 0;
-    //    c_command = temp;
     return c_command;
 } 
 
