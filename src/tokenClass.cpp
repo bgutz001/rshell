@@ -23,13 +23,19 @@ Token::Token(std::string str){
     
     //setup command vec size
     command.resize(1,std::vector<std::string>(1, ""));
-  
+    
+    std::string hello = "hello";
+    std::cout <<  hello.back();
     //while loop. this tokenizes then handles connectors
     while(std::getline(iss, command.at(j).at(i), ' ')) {
-		if(command.at(j).at(i) == "||" || command.at(j).at(i) == "&&" || command.at(j).at(i) == ";") {
+		if(command.at(j).at(i) == "||" || command.at(j).at(i) == "&&" || command.at(j).at(i) == ";" || command.at(j).at(i).back() == ';' ) {
 			if(command.at(j).at(i) == "||") connector.push_back("ORTRUE");
 			if(command.at(j).at(i) == "&&") connector.push_back("ANDTRUE");
 			if(command.at(j).at(i) == ";")  connector.push_back("CONTINUE");
+			if(command.at(j).at(i).back() == ';') {
+			    connector.push_back("CONTINUE");
+			    command.at(j).at(i).pop_back();
+			}
 	    
 			//deletes connecotr in the vector
 			command.at(j).pop_back();
