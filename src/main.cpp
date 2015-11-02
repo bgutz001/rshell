@@ -31,15 +31,38 @@ int main() {
 		Token fullCommand(userInput);
 
 		//execute commands
-		execute(fullCommand.getCommand(0));		
-			//std::cout << fullCommand.getCommand(0)[0] << std::endl;
+		for (int i = 0; i < fullCommand.getNumCommand(); ++i) {
+			if (i != fullCommand.getNumCommand() - 1) {
+				// Handle || connector
+				// If first command succeeds then don't execute
+				// second command
+				if ((execute(fullCommand.getCommand(i)) == 0) &&
+					fullCommand.getConnector(i) == "ORTRUE") {
+					// Jump to ; connector	
+					while (fullCommand.getConnector(i) != "CONTINUE") {
+						// Break if no there are no more connectors
+						if (fullCommand.getConnector(i) == "STOP") break;	
+						++i;
+					} 
+				}		
+				
+				// Handle && connector
+			
+			
+			}
+			// Execute last command
+			else {
+				execute(fullCommand.getCommand(i));
+			}
+		}
 	}
     return 0;
 }
 
 //parameter: command list you want to execute, last char* should be null
-//return: returns -1 if command failed
-//return: returns -2 if child proccess was killed
+//return: returns 1 if command failed
+//return: returns -1 if process was killed
+//return: returns -2 if there was a system error
 //return: returns 0 if command succeeded
 //Description: executes a program in /bin/sh/ on a child process
 int execute(char* command[]) {
@@ -49,14 +72,11 @@ int execute(char* command[]) {
 	int status = 0;
 
 	if ((pid = fork()) < 0) {
-		std::cout << "Failed to create child proccess" << std::endl;
 		perror(0);
-		returnValue = -1;
+		returnValue = -2;
 	}
 	else if (pid == 0) { //the child process
 		if (execvp(command[0], command) == -1) {
-			returnValue = -1;
-			std::cout << "Command failed" << std::endl;
 			perror(0);
 			exit(EXIT_FAILURE);
 		}
@@ -78,8 +98,12 @@ int execute(char* command[]) {
 			}
 			
 			if (WIFSIGNALED(status)) {
-				returnValue = -2;
+				returnValue = -1;
 			}	
+
+			if (WIFEXITED(status)) {
+				returnValue = WEXITSTATUS(status); // 0 if command succeeded, 1 if failed
+			}
 
 		} while(loop);
 	}
