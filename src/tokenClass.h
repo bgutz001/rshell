@@ -24,8 +24,10 @@ class Token {
 	//gets the corresponding connector value
 	std::string getConnector(int);
     private:
+	int old_size;
     	std::vector<std::vector<std::string> > command;
 //	char** c_command;
+//	std::vector<char **> test;
 	char** c_command;
 	std::vector<std::string> connector;
 };
