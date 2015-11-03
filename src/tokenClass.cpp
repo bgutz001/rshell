@@ -17,8 +17,8 @@ Token::Token(std::string str, bool &error){
     } 
     // utitlize stringstream to tokenize
     std::istringstream iss(str);
-    int i = 0;
-    int j = 0;
+    unsigned i = 0;
+    unsigned j = 0;
     
     //setup command vec size
     command.resize(1,std::vector<std::string>(1, ""));
@@ -75,7 +75,7 @@ char** Token::getCommand(int x) {
     old_size = 0;
     c_command = new char*[command.at(x).size() + 1];
  
-    for( int i = 0; i < command.at(x).size(); i++) {
+    for(unsigned i = 0; i < command.at(x).size(); i++) {
     	old_size++;
 	c_command[i] = new char[command.at(x).at(i).length() + 1];
 	copy(command.at(x).at(i).begin(), command.at(x).at(i).end(), c_command[i]);
