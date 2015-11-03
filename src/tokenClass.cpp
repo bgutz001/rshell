@@ -10,12 +10,11 @@ Token::~Token() {
     }
 } 
 
-Token::Token(std::string str){
+Token::Token(std::string str, bool &error){
     //deletes comments. Might need to change
     if(std::string::npos != str.find('#')) {
 	str.erase(str.find('#'));
     } 
-
     // utitlize stringstream to tokenize
     std::istringstream iss(str);
     int i = 0;
@@ -23,9 +22,8 @@ Token::Token(std::string str){
     
     //setup command vec size
     command.resize(1,std::vector<std::string>(1, ""));
-    
-    std::string hello = "hello";
-    std::cout <<  hello.back();
+    bool double_connectors = false;    
+
     //while loop. this tokenizes then handles connectors
     while(std::getline(iss, command.at(j).at(i), ' ')) {
 		if(command.at(j).at(i) == "||" || command.at(j).at(i) == "&&" || command.at(j).at(i) == ";" || command.at(j).at(i).back() == ';' ) {
@@ -36,7 +34,12 @@ Token::Token(std::string str){
 			    connector.push_back("CONTINUE");
 			    command.at(j).at(i).pop_back();
 			}
-	    
+			if(double_connectors) {
+			    //syntax error
+			    error = true;
+			}
+			
+			double_connectors = true;
 			//deletes connecotr in the vector
 			command.at(j).pop_back();
 			j++;
@@ -47,8 +50,9 @@ Token::Token(std::string str){
 			//will be incremented in after if escape
 			i = -1;
 		}
+		else double_connectors = false;
 		i++; 
-	
+		
 		//resizes second vector
 		if(i == command.at(j).size()) {
 			command.at(j).push_back("");
