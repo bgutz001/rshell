@@ -14,7 +14,7 @@ class Token {
 	Token();
 	~Token();
 	//string is the string to be tokenized
-	Token(std::string,bool);
+	Token(std::string, bool&);
 	//the int is the number of the command accessed. 
 	char** getCommand(int);
 	//returns Vector Command

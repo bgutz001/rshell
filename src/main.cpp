@@ -18,6 +18,7 @@ int main() {
 
 	std::string username = getUsername();
 	std::string hostname = getHostname();
+	bool userError = false;
 
 	while (true) {
 		std::string userInput;
@@ -28,31 +29,35 @@ int main() {
 		if (userInput == "exit") exit(EXIT_SUCCESS);
 
 		//pass input to tokenizer
-		Token fullCommand(userInput);
+		Token fullCommand(userInput, userError);
+		if (userError) std::cout << "Error: Syntax Error" << std::endl;
+		else {
 
-		//execute commands
-		for (int i = 0; i < fullCommand.getNumCommand(); ++i) {
-			if (i != fullCommand.getNumCommand() - 1) {
-				// Handle || connector
-				// If first command succeeds then don't execute
-				// second command
-				if ((execute(fullCommand.getCommand(i)) == 0) &&
-					fullCommand.getConnector(i) == "ORTRUE") {
-					// Jump to ; connector	
-					while (fullCommand.getConnector(i) != "CONTINUE") {
-						// Break if no there are no more connectors
-						if (fullCommand.getConnector(i) == "STOP") break;	
-						++i;
-					} 
-				}		
+			//execute commands
+			for (int i = 0; i < fullCommand.getNumCommand(); ++i) {
+				if (i != fullCommand.getNumCommand() - 1) {
+					int status = execute(fullCommand.getCommand(i));
+
+					// Handle || connector
+					// If first command succeeds then don't execute
+					// second command
+					if (status == 0) &&
+						fullCommand.getConnector(i) == "ORTRUE") {
+							++i;
+					}		
 				
-				// Handle && connector
-			
-			
-			}
-			// Execute last command
-			else {
-				execute(fullCommand.getCommand(i));
+					// Handle && connector
+					// If first command fails then don't execute
+					// second command
+					else if (status != 0) &&
+						fullCommand.getConnector(i) == "ANDTRUE") {
+						++i;
+					}					
+				}
+				// Execute last command
+				else {
+					execute(fullCommand.getCommand(i));
+				}
 			}
 		}
 	}
