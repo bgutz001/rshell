@@ -18,9 +18,9 @@ int main() {
 
 	std::string username = getUsername();
 	std::string hostname = getHostname();
-	bool userError = false;
 
 	while (true) {
+		bool userError = false;
 		std::string userInput;
 		std::cout << username << '@' << hostname << "$ ";	
 		userInput = input(); 
@@ -41,7 +41,7 @@ int main() {
 					// Handle || connector
 					// If first command succeeds then don't execute
 					// second command
-					if (status == 0) &&
+					if ((status == 0) &&
 						fullCommand.getConnector(i) == "ORTRUE") {
 							++i;
 					}		
@@ -49,7 +49,7 @@ int main() {
 					// Handle && connector
 					// If first command fails then don't execute
 					// second command
-					else if (status != 0) &&
+					else if ((status != 0) &&
 						fullCommand.getConnector(i) == "ANDTRUE") {
 						++i;
 					}					
