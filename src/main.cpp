@@ -25,16 +25,17 @@ int main() {
 		std::cout << username << '@' << hostname << "$ ";	
 		userInput = input(); 
 
-		//handle exit
-		if (userInput == "exit") exit(EXIT_SUCCESS);
 
 		//pass input to tokenizer
 		Token fullCommand(userInput, userError);
 		if (userError) std::cout << "Error: Syntax Error" << std::endl;
 		else {
-
 			//execute commands
 			for (int i = 0; i < fullCommand.getNumCommand(); ++i) {
+				// Handle exit command
+				if (fullCommand.getCommand(i) != 0 &&
+					strcmp(fullCommand.getCommand(i)[0], "exit") == 0) exit(EXIT_SUCCESS); 
+	
 				if (i != fullCommand.getNumCommand() - 1) {
 					int status = execute(fullCommand.getCommand(i));
 
