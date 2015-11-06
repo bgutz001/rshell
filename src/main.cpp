@@ -34,7 +34,7 @@ int main() {
 			//execute commands
 			for (int i = 0; i < fullCommand.getNumCommand(); ++i) {
 				if (fullCommand.getCommand(i)[0] != 0) {
-					std::cout << fullCommand.getCommand(i)[0] << std::endl;
+					// std::cout << fullCommand.getCommand(i)[0] << std::endl;
 					// Handle exit command
 					if (strcmp(fullCommand.getCommand(i)[0], "exit") == 0) exit(EXIT_SUCCESS); 
 	
