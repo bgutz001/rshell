@@ -42,17 +42,21 @@ int main() {
 					// Handle || connector
 					// If first command succeeds then don't execute
 					// second command
-					if ((status == 0) &&
-						fullCommand.getConnector(i) == "ORTRUE") {
+					if (status == 0) {
+						while (fullCommand.getConnector(i) == "ORTRUE"
+							&& i < fullCommand.getNumCommand()) {
 							++i;
+						}
 					}		
 				
 					// Handle && connector
 					// If first command fails then don't execute
 					// second command
-					else if ((status != 0) &&
-						fullCommand.getConnector(i) == "ANDTRUE") {
-						++i;
+					else if (status != 0) {
+						while (fullCommand.getConnector(i) == "ANDTRUE"
+							&& i < fullCommand.getNumCommand()) {
+							++i;
+						}
 					}					
 				}
 				// Execute last command
