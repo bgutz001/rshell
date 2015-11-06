@@ -3,4 +3,4 @@ Nicholas Rogers
 
 
 Bugs
-1. Echo with "" works from script. However, echo with "" doesn't work from shell.
+1. Echo with "" doesn't work. Can't echo opertators like || && ; 

@@ -32,32 +32,33 @@ int main() {
 		else {
 			//execute commands
 			for (int i = 0; i < fullCommand.getNumCommand(); ++i) {
-				// Handle exit command
-				if (fullCommand.getCommand(i) != 0 &&
-					strcmp(fullCommand.getCommand(i)[0], "exit") == 0) exit(EXIT_SUCCESS); 
+				if (fullCommand.getCommand(i)[0] != 0) {
+					// Handle exit command
+					if (strcmp(fullCommand.getCommand(i)[0], "exit") == 0) exit(EXIT_SUCCESS); 
 	
-				if (i != fullCommand.getNumCommand() - 1) {
-					int status = execute(fullCommand.getCommand(i));
+					if (i != fullCommand.getNumCommand() - 1) {
+						int status = execute(fullCommand.getCommand(i));
 
-					// Handle || connector
-					// If first command succeeds then don't execute
-					// second command
-					if ((status == 0) &&
-						fullCommand.getConnector(i) == "ORTRUE") {
+						// Handle || connector
+						// If first command succeeds then don't execute
+						// second command
+						if ((status == 0) &&
+							fullCommand.getConnector(i) == "ORTRUE") {
+								++i;
+						}		
+					
+						// Handle && connector
+						// If first command fails then don't execute
+						// second command
+						else if ((status != 0) &&
+							fullCommand.getConnector(i) == "ANDTRUE") {
 							++i;
-					}		
-				
-					// Handle && connector
-					// If first command fails then don't execute
-					// second command
-					else if ((status != 0) &&
-						fullCommand.getConnector(i) == "ANDTRUE") {
-						++i;
-					}					
-				}
-				// Execute last command
-				else {
-					execute(fullCommand.getCommand(i));
+						}					
+					}
+					// Execute last command
+					else {
+						execute(fullCommand.getCommand(i));
+					}
 				}
 			}
 		}
@@ -140,3 +141,4 @@ std::string getHostname() {
 	}
 	return hname;
 }
+
