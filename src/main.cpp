@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include "tokenClass.h"
 
-const int HOSTNAME_LENGTH = 16;
+const int HOSTNAME_LENGTH = 32;
 
 int execute(char* command[]);
 std::string input();
@@ -28,40 +28,44 @@ int main() {
 
 		//pass input to tokenizer
 		Token fullCommand(userInput, userError);
+		// Check to see if the user is stupid
 		if (userError) std::cout << "Error: Syntax Error" << std::endl;
 		else {
 			//execute commands
 			for (int i = 0; i < fullCommand.getNumCommand(); ++i) {
-				// Handle exit command
-				if (fullCommand.getCommand(i) != 0 &&
-					strcmp(fullCommand.getCommand(i)[0], "exit") == 0) exit(EXIT_SUCCESS); 
+				if (fullCommand.getCommand(i)[0] != 0) {
+					std::cout << fullCommand.getCommand(i)[0] << std::endl;
+					// Handle exit command
+					if (strcmp(fullCommand.getCommand(i)[0], "exit") == 0) exit(EXIT_SUCCESS); 
 	
-				if (i != fullCommand.getNumCommand() - 1) {
-					int status = execute(fullCommand.getCommand(i));
+					if (i != fullCommand.getNumCommand() - 1) {
+						int status = execute(fullCommand.getCommand(i));
 
-					// Handle || connector
-					// If first command succeeds then don't execute
-					// second command
-					if (status == 0) {
-						while (fullCommand.getConnector(i) == "ORTRUE"
-							&& i < fullCommand.getNumCommand()) {
-							++i;
-						}
-					}		
-				
-					// Handle && connector
-					// If first command fails then don't execute
-					// second command
-					else if (status != 0) {
-						while (fullCommand.getConnector(i) == "ANDTRUE"
-							&& i < fullCommand.getNumCommand()) {
-							++i;
-						}
-					}					
-				}
-				// Execute last command
-				else {
-					execute(fullCommand.getCommand(i));
+						// Handle || connector
+						// If first command succeeds then don't execute
+						// second command
+						if (status == 0) {
+							while (fullCommand.getConnector(i) == "ORTRUE"
+								&& i < fullCommand.getNumCommand()) {
+								++i;
+							}
+						}		
+					
+						// Handle && connector
+						// If first command fails then don't execute
+						// second command
+						else if (status != 0) {
+							while (fullCommand.getConnector(i) == "ANDTRUE"
+								&& i < fullCommand.getNumCommand()) {
+								++i;
+							}
+						}					
+						
+					}
+					// Execute last command
+					else {
+						execute(fullCommand.getCommand(i));
+					}
 				}
 			}
 		}
@@ -144,3 +148,4 @@ std::string getHostname() {
 	}
 	return hname;
 }
+
