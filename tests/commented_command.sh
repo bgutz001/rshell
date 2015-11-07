@@ -1,37 +1,52 @@
 #!/bin/sh
-../bin/rshell <<EOF
 echo Testing commented out commands
-echo ls -p
+echo "#ls" 
+../bin/rshell <<EOF
 #ls
-echo
-echo git
+exit
+EOF
+
+echo "#git"
+../bin/rshell <<EOF
 #git
-echo
-echo 
+exit
+EOF
+
 echo Testing single commands with one commented out argument
-echo ls -a
+echo "ls #-a"
+../bin/rshell <<EOF
 ls #-a
-echo
-echo git status
+exit
+EOF
+
+echo "git #status"
+../bin/rshell <<EOF
 git #status
-echo
-echo happy birthday
+exit
+EOF
+
+echo "happy #birthday"
+../bin/rshell <<EOF
 happy #birthday
-echo
-echo
-echo ls -l
+exit
+EOF
+
+echo "ls #-l"
+../bin/rshell <<EOF
 ls #-l 
-echo
-echo
+exit
+EOF
+
 echo Testing two commands with second one commented
-echo echo hi and ls -a
+echo "echo hi && #ls -a"
+../bin/rshell <<EOF
 echo hi && #ls -a
-echo
-echo
+exit
+EOF
+
 echo Testing two commands with first one commented
-echo echo hi and ls -a
+echo "#echo hi && ls -a"
+../bin/rshell <<EOF
 #echo hi && ls -a
-echo
-echo
 exit
 EOF
