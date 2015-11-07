@@ -86,12 +86,12 @@ int execute(char* command[]) {
 	int status = 0;
 
 	if ((pid = fork()) < 0) {
-		perror(0);
+		perror("Execute: ");
 		returnValue = -2;
 	}
 	else if (pid == 0) { //the child process
 		if (execvp(command[0], command) == -1) {
-			perror(0);
+			perror("Execute: ");
 			exit(EXIT_FAILURE);
 		}
 		exit(EXIT_SUCCESS);
@@ -108,7 +108,7 @@ int execute(char* command[]) {
 			if (p == -1) {
 				returnValue = -2;
 				loop = false;
-				perror(0);
+				perror("Execute: ");
 			}
 			
 			if (WIFSIGNALED(status)) {
@@ -135,7 +135,7 @@ std::string getUsername() {
 	char* uname;
 	if (!(uname = getlogin())) {
 		uname = (char*) "unkown";
-		perror(0);
+		perror("get user name: ");
 	}
 	return uname;
 }
@@ -144,7 +144,7 @@ std::string getHostname() {
 	char hname[HOSTNAME_LENGTH];
 	if (gethostname(hname, HOSTNAME_LENGTH)) {
 		strcpy(hname, "unkown");
-		perror(0);
+		perror("get host name: ");
 	}
 	return hname;
 }
