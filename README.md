@@ -37,11 +37,11 @@ To compile use these commands:
 
 > $ cd rshell  
 
-> $ git checkout hw    
+> $ git checkout hw1    
 
 > $ make    
 
-> $ bin/rshell
+> $ ./bin/rshell
 
 **Known Bugs**
 
