@@ -21,9 +21,9 @@ one fails. For example:
 
 > $ ls -a  
 
-$ echo hello   
+> $ echo hello   
 
-$ mkdir test
+> $ mkdir test
 
 is equivalent to:
 
@@ -35,13 +35,13 @@ To compile use these commands:
 
 > $ git clone https://github.com/bgutz001/rshell.git   
 
-$ cd rshell  
+> $ cd rshell  
 
-$ git checkout hw    
+> $ git checkout hw    
 
-$ make    
+> $ make    
 
-$ bin/rshell
+> $ bin/rshell
 
 **Known Bugs**
 
