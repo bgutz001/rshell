@@ -1,7 +1,8 @@
 # Rshell - A basic implementation of a shell 
 
-Brandon Gutzmann
-Nicholas Rogers
+Brandon Gutzmann  
+
+Nicholas Rogers   
 
 This projected was created for CS100 class at UCR
 
@@ -11,15 +12,17 @@ Commands will have the form:
 > cmd = executable [ argumentList ] [ connector cmd ]
 connector = || or && or ;
 
-where executable is an executable program in the PATH and argumentList is a list of zero
+Where executable is an executable program in the PATH and argumentList is a list of zero
 or more arguments separated by spaces. The connector is an optional way you can run multiple
 commands at once. If a command is followed by ;, then the next command is always executed;
 if a command is followed by &&, then the next command is executed only if the first one
 succeeds; if a command is followed by ||, then the next command is executed only if the first
 one fails. For example:
 
-> $ ls -a
-$ echo hello
+> $ ls -a  
+
+$ echo hello   
+
 $ mkdir test
 
 is equivalent to:
@@ -30,10 +33,14 @@ There is no limit it to the number of commands you can chain.
 
 To compile use these commands:
 
-> $ git clone https://github.com/bgutz001/rshell.git
-$ cd rshell
-$ git checkout hw
-$ make
+> $ git clone https://github.com/bgutz001/rshell.git   
+
+$ cd rshell  
+
+$ git checkout hw    
+
+$ make    
+
 $ bin/rshell
 
 **Known Bugs**
