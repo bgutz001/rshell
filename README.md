@@ -1,4 +1,4 @@
-<h1> Rshell - A basic implementation of a shell
+<h1> Rshell - A basic implementation of a shell <h1>
 
 Brandon Gutzmann
 Nicholas Rogers
