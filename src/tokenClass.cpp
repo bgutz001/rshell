@@ -34,14 +34,13 @@ Token::Token(std::string str, bool &error){
 			    connector.push_back("CONTINUE");
 			    command.at(j).at(i).pop_back();
 			}
+			else command.at(j).pop_back();
 			if(double_connectors) {
 			    //syntax error
 			    error = true;
 			}
 			
 			double_connectors = true;
-			//deletes connecotr in the vector
-			command.at(j).pop_back();
 			j++;
 	    
 			//resizes first vector
@@ -50,7 +49,8 @@ Token::Token(std::string str, bool &error){
 			//will be incremented in after if escape
 			i = -1;
 		}
-		else double_connectors = false;
+		else double_connectors = false;		
+
 		i++; 
 		
 		//resizes second vector
