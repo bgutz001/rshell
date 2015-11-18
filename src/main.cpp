@@ -5,7 +5,11 @@
 #include <sys/wait.h>
 #include <sys/types.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 #include "tokenClass.h"
+#include "glyph.h"
+#include "command.h"
+#include "operator.h"
 
 const int HOSTNAME_LENGTH = 32;
 
@@ -13,6 +17,10 @@ int execute(char* command[]);
 std::string input();
 std::string getUsername();
 std::string getHostname();
+
+struct pair{
+    int f, l;
+}
 
 int main() {
 
@@ -25,6 +33,22 @@ int main() {
 		std::cout << username << '@' << hostname << "$ ";	
 		userInput = input(); 
 
+        int iLeft = 0, iRight = 0;
+        // Index of left parentheses are right parentheses
+        int level;
+
+        for (int i = 0; i < userInput.size(); ++i) {
+            if (userInput.at(i) == '(') {
+                ++level;
+            }
+            else if (userInput.at(i) == ')') {
+                --level;
+            }
+        }
+        if (level != 0) {
+           std::cout << "Error: Mismatching Parentheses" << std::endl; 
+
+
 
 		//pass input to tokenizer
 		Token fullCommand(userInput, userError);
@@ -34,10 +58,13 @@ int main() {
 			//execute commands
 			for (int i = 0; i < fullCommand.getNumCommand(); ++i) {
 				if (fullCommand.getCommand(i)[0] != 0) {
-					// std::cout << fullCommand.getCommand(i)[0] << std::endl;
 					// Handle exit command
 					if (strcmp(fullCommand.getCommand(i)[0], "exit") == 0) exit(EXIT_SUCCESS); 
 	
+                    //Handle test command
+                    if (strcmp(fullCommand.getCommand(i)[0], "test") == 0) test(fullcommand.getCommand(i)); 
+
+
 					if (i != fullCommand.getNumCommand() - 1) {
 						int status = execute(fullCommand.getCommand(i));
 
@@ -149,3 +176,24 @@ std::string getHostname() {
 	return hname;
 }
 
+bool test (char* command[]) {
+    struct stat info;
+
+    if (stat(command[2], &info) == -1) {
+        perror("Stat")
+        return false;
+    }
+
+    if (strcmp(command[1], "-e") == 0) {
+        if (S_ISREG(info.st_mode) || S_ISDIR(info.st_mode) return true; 
+        else return false;
+    }
+    else if (strcmp(command[1], "-f") == 0) {
+        return S_ISREG(info.st_mode);
+    }
+    else if (strcmp(command[1], "-d") == 0) {
+        return S_ISDIR(info.st_mode);
+    }
+
+    return false;
+}
