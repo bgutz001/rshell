@@ -6,21 +6,29 @@
 #include <sys/types.h>
 #include <stdlib.h>
 #include <sys/stat.h>
+#include <algorithm>
 #include "tokenClass.h"
-#include "glyph.h"
-#include "command.h"
-#include "operator.h"
 
 const int HOSTNAME_LENGTH = 32;
 
-int execute(char* command[]);
+bool execute(char* command[]);
 std::string input();
 std::string getUsername();
 std::string getHostname();
+bool test(char* command[]);
 
-struct pair{
-    int f, l;
-}
+struct pair {
+    int begin, end, depth;
+    pair(int b, int e, int d) {
+        begin = b;
+        end = e;
+        depth = d;
+    }
+    bool operator<(const pair& rhs) {
+        return this->depth < rhs.depth;
+    }
+};
+
 
 int main() {
 
@@ -33,12 +41,27 @@ int main() {
 		std::cout << username << '@' << hostname << "$ ";	
 		userInput = input(); 
 
-        int iLeft = 0, iRight = 0;
-        // Index of left parentheses are right parentheses
         int level;
+        std::vector<pair*> indicies;
 
         for (int i = 0; i < userInput.size(); ++i) {
             if (userInput.at(i) == '(') {
+                // find the matching parenthese
+                for(int j = i + 1, temp = 0; ; ++j) {
+                   if (j == userInput.size()) {
+                       // The user didn't have equal parentheses
+                       // TODO
+                       std::cout << "Error in nested for main " << std::endl;
+                       break;
+                   }
+                   if (userInput.at(j) == ')' && temp == 0) {
+                        // Found it
+                        indicies.push_back(new pair(i, j, level));
+                        break;
+                   }
+                   else if (userInput.at(j) == '(') ++temp; 
+                   else if (userInput.at(j) == ')') --temp; 
+                }
                 ++level;
             }
             else if (userInput.at(i) == ')') {
@@ -47,13 +70,24 @@ int main() {
         }
         if (level != 0) {
            std::cout << "Error: Mismatching Parentheses" << std::endl; 
+        }
 
+        // Sort vector based on priority
+        std::stable_sort(indicies.begin(), indicies.end());
 
+        for (int i = 0; i < indicies.size(); ++i) {
+            std::cout << indicies.at(i)->begin << ' '
+                << indicies.at(i)->end << ' '
+                << indicies.at(i)->depth << std::endl;
+        }
 
 		//pass input to tokenizer
 		Token fullCommand(userInput, userError);
+
 		// Check to see if the user is stupid
-		if (userError) std::cout << "Error: Syntax Error" << std::endl;
+		if (userError) {
+            std::cout << "Error: Syntax Error" << std::endl;
+        }
 		else {
 			//execute commands
 			for (int i = 0; i < fullCommand.getNumCommand(); ++i) {
@@ -97,24 +131,21 @@ int main() {
 			}
 		}
 	}
+    
     return 0;
 }
 
 //parameter: command list you want to execute, last char* should be null
-//return: returns 1 if command failed
-//return: returns -1 if process was killed
-//return: returns -2 if there was a system error
-//return: returns 0 if command succeeded
+//return: returns true if command succeded 
 //Description: executes a program in /bin/sh/ on a child process
-int execute(char* command[]) {
+bool execute(char* command[]) {
 
 	pid_t pid; //process id for child
-	int returnValue = 0;
 	int status = 0;
 
 	if ((pid = fork()) < 0) {
 		perror("Execute: ");
-		returnValue = -2;
+        return false;
 	}
 	else if (pid == 0) { //the child process
 		if (execvp(command[0], command) == -1) {
@@ -133,23 +164,22 @@ int execute(char* command[]) {
 
 			//handles errors and exit statuses
 			if (p == -1) {
-				returnValue = -2;
+                return false;
 				loop = false;
 				perror("Execute: ");
 			}
 			
 			if (WIFSIGNALED(status)) {
-				returnValue = -1;
+                return false;
 			}	
 
 			if (WIFEXITED(status)) {
-				returnValue = WEXITSTATUS(status); // 0 if command succeeded, 1 if failed
+				return !WEXITSTATUS(status); // 0 if command succeeded, 1 if failed
 			}
 
 		} while(loop);
 	}
-
-	return returnValue;
+    return false;
 }
 
 std::string input() {
@@ -180,12 +210,12 @@ bool test (char* command[]) {
     struct stat info;
 
     if (stat(command[2], &info) == -1) {
-        perror("Stat")
+        perror("Stat");
         return false;
     }
 
     if (strcmp(command[1], "-e") == 0) {
-        if (S_ISREG(info.st_mode) || S_ISDIR(info.st_mode) return true; 
+        if (S_ISREG(info.st_mode) || S_ISDIR(info.st_mode)) return true; 
         else return false;
     }
     else if (strcmp(command[1], "-f") == 0) {
