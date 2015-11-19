@@ -23,47 +23,77 @@ Token::Token(std::string str, bool &error){
     //setup command vec size
     command.resize(1,std::vector<std::string>(1, ""));
     bool double_connectors = false;    
-
+    bool multi_word = false;
+    bool bracket = false;
+    bool immediate = false;
     //while loop. this tokenizes then handles connectors
     while(std::getline(iss, command.at(j).at(i), ' ')) {
-		if(command.at(j).at(i) == "||" || command.at(j).at(i) == "&&" || command.at(j).at(i) == ";" || command.at(j).at(i).back() == ';' ) {
-			if(command.at(j).at(i) == "||") connector.push_back("ORTRUE");
-			if(command.at(j).at(i) == "&&") connector.push_back("ANDTRUE");
-			if(command.at(j).at(i) == ";")  connector.push_back("CONTINUE");
-			if(command.at(j).at(i).back() == ';') {
-			    connector.push_back("CONTINUE");
-			    command.at(j).at(i).pop_back();
-			}
-			else command.at(j).pop_back();
-			if(double_connectors) {
-			    //syntax error
-			    error = true;
-			}
-			
-			double_connectors = true;
-			j++;
-	    
-			//resizes first vector
-			if(j == command.size()) command.resize(j + 1, std::vector<std::string>(1));
-	
-			//will be incremented in after if escape
-			i = -1;
-		}
-		else double_connectors = false;		
-
-		i++; 
+	if((command.at(j).at(i) == "||" || command.at(j).at(i) == "&&" || command.at(j).at(i) == ";" || command.at(j).at(i).back() == ';') && !multi_word && !bracket) {
+	    if(command.at(j).at(i) == "||") connector.push_back("ORTRUE");
+	    if(command.at(j).at(i) == "&&") connector.push_back("ANDTRUE");
+	    if(command.at(j).at(i) == ";")  connector.push_back("CONTINUE");
+	    if(command.at(j).at(i).back() == ';') {
+	        connector.push_back("CONTINUE");
+	        command.at(j).at(i).pop_back();
+	    }
+	    else command.at(j).pop_back();
+	    if(double_connectors) {
+	        //syntax error
+	        error = true;
+	    }
 		
-		//resizes second vector
-		if(i == command.at(j).size()) {
-			command.at(j).push_back("");
-		}
+	    double_connectors = true;
+	    j++;
+	    
+	    //resizes first vector
+	    if(j == command.size()) command.resize(j + 1, std::vector<std::string>(1));
+		//will be incremented in after if escape
+		i = -1;
+	}
+	else if( !multi_word && command.at(j).at(i) == "[") {
+	    double_connectors = false;
+	    bracket = true;
+	    immediate = true;
+	    command.at(j).at(i) = "test";
+	}
+	else if ( command.at(j).at(i) == "\"") {
+	    if(!multi_word) multi_word = true;
+	    else multi_word = false;
+	    command.at(j).at(i).pop_back();
+	    double_connectors = false;
+	}
+        else if(multi_word) {
+	    command.at(j).at(i - 1) += " " + command.at(j).at(i);
+	    i--;
+	    double_connectors = false;
+	}
+	else if(immediate && command.at(j).at(i).at(0) != '-') {
+	    command.at(j).emplace(command.at(j).end() - 1, "-e");
+	    immediate = false;
+	    i++;
+	    std::cout << "Lookie lookie " << command.at(j).at(i) << std::endl;
+	    double_connectors = false;
+	}
+        else double_connectors = false;			
+	if(bracket && command.at(j).at(i) == "]") {
+	    command.at(j).at(i).pop_back();    
+	    bracket = false;
+	}
+	i++; 
+		
+        //resizes second vector
+        if(i == command.at(j).size()) {
+	   command.at(j).push_back("");
+        }
+	
     } 
     
-    	//deletes hanging vector
+    //deletes hanging vector
     command.at(j).pop_back();
     connector.push_back("STOP");
-    
-    //sets up the c_command to be copied
+
+    if(multi_word || bracket) error = true;
+   //sets up the c_command to be copied
     c_command = 0;
     old_size = 0;
 }
