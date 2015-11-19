@@ -36,120 +36,88 @@ int main() {
 	std::string username = getUsername();
 	std::string hostname = getHostname();
 
-	while (true) {
-		std::string userInput;
-		std::cout << username << '@' << hostname << "$ ";	
-		userInput = input(); 
+    while (true) {
+        std::string userInput;
+        std::cout << username << '@' << hostname << "$ ";	
+        userInput = input(); 
         process(userInput);
-	}
-    
+    }
+
     return 0;
 }
 
 bool process(std::string c) {
-    for (int i = 0; i < c.size(); ++i) {
-        if (c.at(i) == ' ') c.erase(i, 1);
-        else break;
+    bool result = true;
+    bool userError = false;
+    bool par = false; // Are there parentheses around a command
+    std::string secondc;
+
+    if (int i = c.find('(') != std::string::npos) {
+        par = true;
+        secondc = c.substr(i, c.size() - i);
+        c.erase(i, c.size() - i);
+        std::cout << "Fixed string: " << c << std::endl;
+
     }
-    if (c.at(0) != '(') {
-        bool result = true;
-        bool userError = false;
-        bool par = false; // Are there parentheses around a command
-        std::string secondc;
 
-        if (int i = c.find('(') != std::string::npos) {
-            par = true;
-            secondc = c.substr(i, c.size() - i);
-            c.erase(i, c.size() - i);
-            std::cout << "Fixed string: " << c << std::endl;
-            
-        }
+    //pass input to tokenizer
+    Token fullCommand(c, userError);
 
-        //pass input to tokenizer
-        Token fullCommand(c, userError);
+    // Check to see if the user is stupid
+    if (userError) {
+        std::cout << "Error: Syntax Error" << std::endl;
+        return false;
+    }
 
-        // Check to see if the user is stupid
-        if (userError) {
-            std::cout << "Error: Syntax Error" << std::endl;
-            return false;
-        }
+    //execute commands
+    for (int i = 0; i < fullCommand.getNumCommand(); ++i) {
+        if (fullCommand.getCommand(i)[0] != 0) {
+            // Handle exit command
+            if (strcmp(fullCommand.getCommand(i)[0], "exit") == 0) exit(EXIT_SUCCESS); 
 
-        //execute commands
-        for (int i = 0; i < fullCommand.getNumCommand(); ++i) {
-            if (fullCommand.getCommand(i)[0] != 0) {
-                // Handle exit command
-                if (strcmp(fullCommand.getCommand(i)[0], "exit") == 0) exit(EXIT_SUCCESS); 
-
-                //Handle test command
-                //if (strcmp(fullCommand.getCommand(i)[0], "test") == 0) test(fullcommand.getCommand(i)); 
+            //Handle test command
+            //if (strcmp(fullCommand.getCommand(i)[0], "test") == 0) test(fullcommand.getCommand(i)); 
 
 
-                if (i != fullCommand.getNumCommand() - 1) {
-                    bool status = execute(fullCommand.getCommand(i));
+            if (i != fullCommand.getNumCommand() - 1) {
+                bool status = execute(fullCommand.getCommand(i));
 
-                    // Handle || connector
-                    // If first command succeeds then don't execute
-                    // second command
-                    if (status) {
-                        while (fullCommand.getConnector(i) == "ORTRUE"
-                                && i < fullCommand.getNumCommand()) {
-                            ++i;
-                        }
-                    }		
+                // Handle || connector
+                // If first command succeeds then don't execute
+                // second command
+                if (status) {
+                    while (fullCommand.getConnector(i) == "ORTRUE"
+                            && i < fullCommand.getNumCommand()) {
+                        ++i;
+                    }
+                }		
 
-                    // Handle && connector
-                    // If first command fails then don't execute
-                    // second command
-                    else if (!status) {
-                        while (fullCommand.getConnector(i) == "ANDTRUE"
-                                && i < fullCommand.getNumCommand()) {
-                            ++i;
-                        }
-                    }					
+                // Handle && connector
+                // If first command fails then don't execute
+                // second command
+                else if (!status) {
+                    while (fullCommand.getConnector(i) == "ANDTRUE"
+                            && i < fullCommand.getNumCommand()) {
+                        ++i;
+                    }
+                }					
 
-                }
-                // Execute last command
-                else {
-                    result = execute(fullCommand.getCommand(i));
-                    if (par) {
-                        if (result && fullCommand.getConnector(i) == "ORTRUE") {
-                            result = process(secondc);
-                        }
-                        else if (!result && fullCommand.getConnector(i) == "ANDTRUE") {
-                            result = process(secondc);
-                        }
+            }
+            // Execute last command
+            else {
+                result = execute(fullCommand.getCommand(i));
+                if (par) {
+                    if (result && fullCommand.getConnector(i) == "ORTRUE") {
+                        result = process(secondc);
+                    }
+                    else if (!result && fullCommand.getConnector(i) == "ANDTRUE") {
+                        result = process(secondc);
                     }
                 }
             }
         }
-        return result;
     }
-    else { 
-        int begin = c.find('('), end;
-        bool result;
-
-        // find the matching parenthese
-        for(int j = begin + 1, temp = 0; ; ++j) {
-            if (j == c.size()) {
-                // The user didn't have equal parentheses
-                // TODO
-                std::cout << "Error in nested for main " << std::endl;
-                break;
-            }
-            if (c.at(j) == ')' && temp == 0) {
-                // Found it
-                end = j;
-                break;
-            }
-            else if (c.at(j) == '(') ++temp; 
-            else if (c.at(j) == ')') --temp; 
-        }
-
-        result = process(c.substr(begin + 1, end - begin - 1));
-        if (result) c.replace(begin, end - begin, "true");
-        else c.replace(begin, end - begin, "false");
-        return process(c);
-    }
+    return result;
 }
 
 
