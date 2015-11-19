@@ -33,8 +33,8 @@ struct pair {
 
 int main() {
 
-	std::string username = getUsername();
-	std::string hostname = getHostname();
+    std::string username = getUsername();
+    std::string hostname = getHostname();
 
     while (true) {
         std::string userInput;
@@ -47,18 +47,9 @@ int main() {
 }
 
 bool process(std::string c) {
-    bool result = true;
+    bool result;
     bool userError = false;
-    bool par = false; // Are there parentheses around a command
-    std::string secondc;
 
-    if (int i = c.find('(') != std::string::npos) {
-        par = true;
-        secondc = c.substr(i, c.size() - i);
-        c.erase(i, c.size() - i);
-        std::cout << "Fixed string: " << c << std::endl;
-
-    }
 
     //pass input to tokenizer
     Token fullCommand(c, userError);
@@ -71,50 +62,45 @@ bool process(std::string c) {
 
     //execute commands
     for (int i = 0; i < fullCommand.getNumCommand(); ++i) {
+        result = false;
         if (fullCommand.getCommand(i)[0] != 0) {
+            std::string par(fullCommand.getCommand(i)[0]);
+            std::cout << "command is: " << par << std::endl;
+
             // Handle exit command
             if (strcmp(fullCommand.getCommand(i)[0], "exit") == 0) exit(EXIT_SUCCESS); 
 
             //Handle test command
-            //if (strcmp(fullCommand.getCommand(i)[0], "test") == 0) test(fullcommand.getCommand(i)); 
+            //else if (strcmp(fullCommand.getCommand(i)[0], "test") == 0) test(fullcommand.getCommand(i)); 
 
+            // Check if command is in parentheses
+            else if (par.find('(') != std::string::npos)
+                result = process(par.substr(1, par.size() - 2));
 
-            if (i != fullCommand.getNumCommand() - 1) {
-                bool status = execute(fullCommand.getCommand(i));
-
-                // Handle || connector
-                // If first command succeeds then don't execute
-                // second command
-                if (status) {
-                    while (fullCommand.getConnector(i) == "ORTRUE"
-                            && i < fullCommand.getNumCommand()) {
-                        ++i;
-                    }
-                }		
-
-                // Handle && connector
-                // If first command fails then don't execute
-                // second command
-                else if (!status) {
-                    while (fullCommand.getConnector(i) == "ANDTRUE"
-                            && i < fullCommand.getNumCommand()) {
-                        ++i;
-                    }
-                }					
-
-            }
-            // Execute last command
-            else {
+            else 
                 result = execute(fullCommand.getCommand(i));
-                if (par) {
-                    if (result && fullCommand.getConnector(i) == "ORTRUE") {
-                        result = process(secondc);
-                    }
-                    else if (!result && fullCommand.getConnector(i) == "ANDTRUE") {
-                        result = process(secondc);
-                    }
+
+            // Check Connectors
+
+            // Handle || connector
+            // If first command succeeds then don't execute
+            // second command
+            if (result) {
+                while (i < fullCommand.getNumCommand() &&
+                        fullCommand.getConnector(i) == "ORTRUE") {
+                    ++i;
                 }
-            }
+            }		
+
+            // Handle && connector
+            // If first command fails then don't execute
+            // second command
+            else if (!result) {
+                while (i < fullCommand.getNumCommand() &&
+                        fullCommand.getConnector(i) == "ANDTRUE") {
+                    ++i;
+                }
+            }					
         }
     }
     return result;
