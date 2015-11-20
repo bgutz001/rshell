@@ -59,7 +59,9 @@ bool process(std::string c) {
             if (com == "exit") exit(EXIT_SUCCESS); 
 
             //Handle test command
-            //else if (strcmp(fullCommand.getCommand(i)[0], "test") == 0) test(fullcommand.getCommand(i)); 
+            else if (com == "test") {
+                result = test(fullCommand.getCommand(i)); 
+            }
 
             // Check if command is in parentheses
             else if (com.find('(') != std::string::npos) {
