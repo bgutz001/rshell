@@ -18,28 +18,18 @@ std::string getUsername();
 std::string getHostname();
 bool test(char* command[]);
 
-struct pair {
-    int begin, end, depth;
-    pair(int b, int e, int d) {
-        begin = b;
-        end = e;
-        depth = d;
-    }
-    bool operator<(const pair& rhs) {
-        return this->depth < rhs.depth;
-    }
-};
-
 
 int main() {
 
     std::string username = getUsername();
     std::string hostname = getHostname();
+    std::string userInput;
 
     while (true) {
-        std::string userInput;
         std::cout << username << '@' << hostname << "$ ";	
-        userInput = input(); 
+        std::cout << "before" << std::endl;
+        std::getline(std::cin, userInput);
+        std::cout << "after" << std::endl;
         process(userInput);
     }
 
@@ -64,21 +54,22 @@ bool process(std::string c) {
     for (int i = 0; i < fullCommand.getNumCommand(); ++i) {
         result = false;
         if (fullCommand.getCommand(i)[0] != 0) {
-            std::string par(fullCommand.getCommand(i)[0]);
-            std::cout << "command is: " << par << std::endl;
+            std::string com(fullCommand.getCommand(i)[0]);
+            std::cout << "command is: " << com << std::endl;
 
             // Handle exit command
-            if (strcmp(fullCommand.getCommand(i)[0], "exit") == 0) exit(EXIT_SUCCESS); 
+            if (com == "exit") exit(EXIT_SUCCESS); 
 
             //Handle test command
             //else if (strcmp(fullCommand.getCommand(i)[0], "test") == 0) test(fullcommand.getCommand(i)); 
 
             // Check if command is in parentheses
-            else if (par.find('(') != std::string::npos)
-                result = process(par.substr(1, par.size() - 2));
-
-            else 
+            else if (com.find('(') != std::string::npos) {
+                result = process(com.substr(1, com.size() - 2));
+            }
+            else { 
                 result = execute(fullCommand.getCommand(i));
+            }
 
             // Check Connectors
 
@@ -112,9 +103,9 @@ bool process(std::string c) {
 //return: returns true if command succeded 
 //Description: executes a program in /bin/sh/ on a child process
 bool execute(char* command[]) {
-
     pid_t pid; //process id for child
     int status = 0;
+    bool returnValue = false;
 
     if ((pid = fork()) < 0) {
         perror("Execute: ");
@@ -124,33 +115,34 @@ bool execute(char* command[]) {
         if (execvp(command[0], command) == -1) {
             perror("Execute: ");
             exit(EXIT_FAILURE);
+            returnValue = false;
         }
-        bool loop;
+        bool loop = true;
         do {
             int p = waitpid(pid, &status, 0);
 
             loop = (p != pid);
             //handles errors and exit statuses 
             if (p == -1) { 
-                return false; 
+                returnValue = false;
                 loop = false;
                 perror("Execute: ");
             }
             if (WIFSIGNALED(status)) { 
-                return false; 
+                //TODO
+                returnValue = false;
             }	
             if (WIFEXITED(status)) {
-                return !WEXITSTATUS(status); // 0 if command succeeded, 1 if failed
+                returnValue = WEXITSTATUS(status); // 0 if command succeeded, 1 if failed
             }
 
         } while(loop);
     }
-    return false;
+    return returnValue;
 }
 
 std::string input() {
     std::string temp;
-    std::getline(std::cin, temp);
     return temp;
 }
 
