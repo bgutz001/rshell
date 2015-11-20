@@ -177,7 +177,7 @@ bool test (char* command[]) {
     struct stat info;
 
     if (stat(command[2], &info) == -1) {
-        perror("Stat");
+        //perror("Stat");
         return false;
     }
 
@@ -191,6 +191,7 @@ bool test (char* command[]) {
     else if (strcmp(command[1], "-d") == 0) {
         return S_ISDIR(info.st_mode);
     }
-
+    
+    std::cout << "Unrecognized test flag" << std::endl;
     return false;
 }
