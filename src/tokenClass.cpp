@@ -15,106 +15,92 @@ Token::Token(std::string str, bool &error){
     //deletes comments. Might need to change
     if(std::string::npos != str.find('#')) {
         str.erase(str.find('#'));
-    } 
+    }
+    
+    error = false;
+
     // utitlize stringstream to tokenize
     std::istringstream iss(str);
     unsigned i = 0;
     unsigned j = 0;
 
+    i = std::count(str.begin(), str.end(), ')'); 
+    j = std::count(str.begin(), str.end(), '('); 
+    if( i - j ) error = true;
+     
+    i = std::count(str.begin(), str.end(), ']'); 
+    j = std::count(str.begin(), str.end(), '['); 
+    if( i - j ) error = true;
+    
+    i = std::count(str.begin(), str.end(), '\"'); 
+    if((i % 2) ) error = true;
+    
+
+    i = 0;
+    j = 0;
+    
     //setup command vec size
     command.resize(1,std::vector<std::string>(1, ""));
     bool double_connectors = false;    
-    bool multi_word = false;
-    bool bracket = false;
-    bool immediate = false;
-    int parcount = -99;
+
     //while loop. this tokenizes then handles connectors
     while(std::getline(iss, command.at(j).at(i), ' ')) {
-	if(command.at(j).at(i).at(0) == '(' && !multi_word) {
-	   // parcount += std::count(command.at(j).at(i).begin(), command.at(j).at(i).end(), '(');
-	    multi_word = true;
-	    parcount = 0;
-	    double_connectors = false;	    
-	}
-	else if((command.at(j).at(i) == "||" || command.at(j).at(i) == "&&" || command.at(j).at(i) == ";" || command.at(j).at(i).back() == ';') && (!multi_word && !bracket)) {
+	if((command.at(j).at(i) == "||" || command.at(j).at(i) == "&&" || command.at(j).at(i) == ";" || command.at(j).at(i).back() == ';')) {
 	    if(command.at(j).at(i) == "||") connector.push_back("ORTRUE");
 	    if(command.at(j).at(i) == "&&") connector.push_back("ANDTRUE");
 	    if(command.at(j).at(i) == ";")  connector.push_back("CONTINUE");
 	    if(command.at(j).at(i).back() == ';') {
-	        connector.push_back("CONTINUE");
-	       // command.at(j).at(i).pop_back();
+		connector.push_back("CONTINUE");
 	    }
 	    else command.at(j).pop_back();
 	    if(double_connectors) {
-	        //syntax error
-	        error = true;
+		//syntax error
+		error = true;
 	    }
-		
+			
 	    double_connectors = true;
 	    j++;
-	    
+			
 	    //resizes first vector
 	    if(j == command.size()) command.resize(j + 1, std::vector<std::string>(1));
-		//will be incremented in after if escape
-		i = -1;
+	    //will be incremented in after if escape
+	    i = -1;
 	}
-	else if( !multi_word && command.at(j).at(i).at(0) == '[' ) {
+	else {
+	    ////////////////////////////////////////////////////////////////////
+	    /////													////////////////
+	    ////		replace Array with command.at(i).at(j)		//////////////
+	    ///														////////////////
+	    ///////////////////////////////////////////////////////////////
 	    double_connectors = false;
-	    bracket = true;
-	    immediate = true;
-	    command.at(j).emplace(command.at(j).end() - 1, "test");
-	    i++;
-	}
-	else if ( command.at(j).at(i).at(0) == '\"' || command.at(j).at(i).at(command.at(j).at(i).size() - 1) == '\"') {
-	    if(!multi_word) multi_word = true;
-	    else multi_word = false;
-	    if (command.at(j).at(i).at(0) == '\"') {
-		command.at(j).at(i).erase(command.at(j).at(i).begin());
-		multi_word = true;
-	    }
-	    if (command.at(j).at(i).at(command.at(j).at(i).size() - 1) == '\"'){
-		command.at(j).at(i).pop_back();
-		multi_word = false;
-	    }
-	    double_connectors = false;
-	}
-        else if(multi_word) {
-	    command.at(j).at(i - 1) += " " + command.at(j).at(i);
-	    i--;
-	    double_connectors = false;
-	    parcount += std::count(command.at(j).at(i).begin(), command.at(j).at(i).end(), '('); 
-	    parcount -= std::count(command.at(j).at(i).begin(), command.at(j).at(i).end(), ')');
-	    if(!parcount) {
-		multi_word = false;
-		parcount = -99;
-	    }
-	}
-	else if(immediate && command.at(j).at(i).at(0) != '-') {
-	    command.at(j).emplace(command.at(j).end() - 1, "-e");
-	    immediate = false;
-	    i++;
-	    //std::cout << "Lookie lookie " << command.at(j).at(i) << std::endl;
-	    double_connectors = false;
-	}
-        else double_connectors = false;			
-	if(bracket && command.at(j).at(i).at(command.at(j).at(i).size() - 1) == ']') {
-	    command.at(j).at(i).pop_back();    
-	    bracket = false;
-	}
+	    if(command.at(j).at(i).at(0) == '\"') {
+	    	//std::cout << "Found it" << std::endl;
+	    	command.at(j).at(i).erase(command.at(j).at(i).begin());
+		if(command.at(j).at(i).at(command.at(j).at(i).size() - 1) == '\"') {
+		    command.at(j).at(i).pop_back();
+		}
+		else {
+		    std::string temp;
+		    std::getline(iss, temp, '\"');
+		    command.at(j).at(i) += " ";
+		    command.at(j).at(i) += temp;
+		}
+	    }			
+			
+	}	
 	i++; 
-		
-        //resizes second vector
-        if(i == command.at(j).size()) {
+			
+	//resizes second vector
+	if(i == command.at(j).size()) {
 	   command.at(j).push_back("");
-        }
-	
+	}
     }  
       
     //deletes hanging vector
     command.at(j).pop_back();
     connector.push_back("STOP");
 
-    if(multi_word || bracket) error = true;
+    //if(multi_word || bracket) error = true;
    //sets up the c_command to be copied
     c_command = 0;
     old_size = 0;
