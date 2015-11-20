@@ -11,7 +11,7 @@
 
 const int HOSTNAME_LENGTH = 32;
 
-bool execute(char* command[]);
+int execute(char* command[]);
 bool process(std::string c);
 std::string input();
 std::string getUsername();
@@ -27,9 +27,7 @@ int main() {
 
     while (true) {
         std::cout << username << '@' << hostname << "$ ";	
-        std::cout << "before" << std::endl;
         std::getline(std::cin, userInput);
-        std::cout << "after" << std::endl;
         process(userInput);
     }
 
@@ -68,7 +66,7 @@ bool process(std::string c) {
                 result = process(com.substr(1, com.size() - 2));
             }
             else { 
-                result = execute(fullCommand.getCommand(i));
+                result = (execute(fullCommand.getCommand(i)) == 0);
             }
 
             // Check Connectors
@@ -102,41 +100,49 @@ bool process(std::string c) {
 //parameter: command list you want to execute, last char* should be null
 //return: returns true if command succeded 
 //Description: executes a program in /bin/sh/ on a child process
-bool execute(char* command[]) {
+int execute(char* command[]) {
     pid_t pid; //process id for child
+    int returnValue = 0;
     int status = 0;
-    bool returnValue = false;
 
     if ((pid = fork()) < 0) {
         perror("Execute: ");
-        return false;
+        returnValue = -2;
     }
     else if (pid == 0) { //the child process
-        if (execvp(command[0], command) == -1) {
-            perror("Execute: ");
+        if (execvp(command[0],
+                    command) == -1) {
+            perror("Execute");
             exit(EXIT_FAILURE);
-            returnValue = false;
         }
-        bool loop = true;
-        do {
-            int p = waitpid(pid, &status, 0);
-
+        exit(EXIT_SUCCESS);
+    }
+    else
+    {
+        //the parent process
+        //wait until the child process has exited
+        bool loop;
+        do
+        {
+            int p = waitpid(pid, &status, 0); 
             loop = (p != pid);
-            //handles errors and exit statuses 
-            if (p == -1) { 
-                returnValue = false;
+
+            //handles errors and exit statuses
+            if (p == -1) {
+                returnValue = -2;
                 loop = false;
-                perror("Execute: ");
+                perror("Execute");
             }
-            if (WIFSIGNALED(status)) { 
-                //TODO
-                returnValue = false;
-            }	
+            if (WIFSIGNALED(status)) {
+                returnValue = -1;
+            }       
+
             if (WIFEXITED(status)) {
-                returnValue = WEXITSTATUS(status); // 0 if command succeeded, 1 if failed
+                returnValue = WEXITSTATUS(status);
             }
 
-        } while(loop);
+        }
+        while(loop);
     }
     return returnValue;
 }
@@ -153,6 +159,7 @@ std::string getUsername() {
         perror("get user name: ");
     }
     return uname;
+
 }
 
 std::string getHostname() {
