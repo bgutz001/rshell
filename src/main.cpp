@@ -48,13 +48,15 @@ bool process(std::string c) {
         return false;
     }
     
+    /*
     // Print commands for debugging
     for (int i = 0; i < fullCommand.getNumCommand(); ++i) {
         for (int j = 0; fullCommand.getCommand(i)[j] != 0; ++j) {
-            std::cout << fullCommand.getCommand(i)[j] << ' ';
+            std::cout << fullCommand.getCommand(i)[j] << " ; ";
         }
         std::cout << std::endl;
     }
+    */
 
     //execute commands
     for (int i = 0; i < fullCommand.getNumCommand(); ++i) {
@@ -72,7 +74,7 @@ bool process(std::string c) {
 
             // Check if command is in parentheses
             else if (com.find('(') != std::string::npos) {
-                std::cout << "Recursive call: " << com.substr(1, com.size() - 2) << std::endl;
+                // std::cout << "Recursive call: " << com.substr(1, com.size() - 2) << std::endl;
                 result = process(com.substr(1, com.size() - 2));
             }
             else { 

@@ -77,3 +77,14 @@ exit
 EOF
 echo --------------------------------------------------------------------------
 
+echo "Testing nested precedence on multiple commands"
+echo "(echo a && (echo b && happy)) || echo c"
+echo "Expecting: "
+(echo a && (echo b && happy)) || echo c
+echo "Result"
+../bin/rshell <<EOF
+(echo a && (echo b && happy)) || echo c
+exit
+EOF
+echo --------------------------------------------------------------------------
+
