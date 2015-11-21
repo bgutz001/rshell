@@ -10,6 +10,7 @@ This projected was created for CS100 class at UCR
 
 Commands will have the form:
 > cmd = executable [ argumentList ] [ connector cmd ]
+
 connector = || or && or ;
 
 Where executable is an executable program in the PATH and argumentList is a list of zero
@@ -31,16 +32,27 @@ is equivalent to:
 
 There is no limit it to the number of commands you can chain. You can also use ( ) to group commands together. For
 example:   
+
 > $ echo a && echo b || echo c && echo d   
+
 will print  
+
 > $ a  
+
 > $ b  
+
 > $ d  
+
 but  
+
 > $ (echo a && echo b) || (echo c && echo d)  
+
 will print   
+
 > $ a  
+
 > $ b  
+
 
 To compile use these commands:
 
@@ -55,11 +67,16 @@ To compile use these commands:
 > $ ./bin/rshell
 
 To test if a file exists use the form:  
+
 > cmd = test [ arg ] [ path to file ]   
+
 The availiabe arguments are -e to test if the file exists, -d to test if its a directory, and -f to see if its a normal
 file. Also, you can use the form:    
+
 > cmd = [ [ arg ] [ path to file ] ]     
+
 Note that you must actually type the outer most [ ]. For example:    
+
 > [ -e /bin ]    
 
 
