@@ -53,7 +53,7 @@ bool process(std::string c) {
         for (int j = 0; fullCommand.getCommand(i)[j] != 0; ++j) {
             std::cout << fullCommand.getCommand(i)[j] << " ; ";
         }
-        std::cout << std::endl;
+        std::cout << std::endl << std::endl;
     }
 
     //execute commands
@@ -72,15 +72,7 @@ bool process(std::string c) {
 
             // Check if command is in parentheses
             else if (com.find('(') != std::string::npos) {
-                std::cout << "Recursive call: " << com.substr(1, com.find_last_of(')') - 1) << std::endl;
-                result = process(com.substr(1, com.find_last_of(')') - 1));
-                if (result) {
-                    com.replace(0, com.find_last_of(')'), "true");
-                }
-                else {
-                    com.replace(0, com.find_last_of(')'), "false");
-                }
-                result = process(com);
+                result = process(com.substr(1, com.size() - 2));
             }
             else { 
                 result = (execute(fullCommand.getCommand(i)) == 0);
@@ -190,6 +182,7 @@ std::string getHostname() {
 
 bool test (char* command[]) {
     struct stat info;
+    
 
     if (stat(command[2], &info) == -1) {
         //perror("Stat");

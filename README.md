@@ -43,6 +43,16 @@ To compile use these commands:
 
 > $ ./bin/rshell
 
+To test if a file exists use the form:  
+> cmd = test [ arg ] [ path to file ]  
+The availiabe arguments are -e to test if the file exists, -d to test if its a directory, and -f to see if its a normal
+file. Also, you can use the form:  
+> cmd = [ [ arg ] [ path to file ] ]  
+Note that you must actually type the outer most [ ]. For example:  
+> [ -e /bin ]  
+
+
 **Known Bugs**
 
-1. Echo with "" doesn't work. Can't echo opertators like || && ; 
+1. If you want to print out special characters such as && || ; [ ] or ( ) make sure you use " " around the whole echo
+statment or else things will break
