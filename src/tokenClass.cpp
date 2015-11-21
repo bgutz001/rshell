@@ -45,9 +45,10 @@ Token::Token(std::string str, bool &error){
     bool isBracket = false;
     bool immediate = false;
     bool removal = false;
-    //while loop. this tokenizes then handles connectors
+    //while loop. this tkenizes then handles connectors
     while(std::getline(iss, command.at(j).at(i), ' ')) {
-	if((command.at(j).at(i) == "||" || command.at(j).at(i) == "&&" || command.at(j).at(i) == ";" || command.at(j).at(i).back() == ';') && !isBracket) {
+	if(command.at(j).at(i) == "" || command.at(j).at(i) == " ") removal = true;
+	else if((command.at(j).at(i) == "||" || command.at(j).at(i) == "&&" || command.at(j).at(i) == ";" || command.at(j).at(i).back() == ';') && !isBracket) {
 	    if(command.at(j).at(i) == "||") connector.push_back("ORTRUE");
 	    if(command.at(j).at(i) == "&&") connector.push_back("ANDTRUE");
 	    if(command.at(j).at(i) == ";")  connector.push_back("CONTINUE");
@@ -90,8 +91,10 @@ Token::Token(std::string str, bool &error){
 	    }			
 	    if(isBracket) {
 		if(command.at(j).at(i).at(command.at(j).at(i).size() - 1) == ']') {
+		    if(command.at(j).at(i) == "]") removal = true;
+		    else command.at(j).at(i).pop_back();
 		    isBracket = false;
-		    removal = true;
+		    
 		}
 		if(immediate) {
 		    if(command.at(j).at(i).at(0) != '-') {
@@ -122,16 +125,43 @@ Token::Token(std::string str, bool &error){
 		    }
 		}
 		if(command.at(j).at(i).at(command.at(j).at(i).size() - 1) == ']') {
-		    command.at(j).at(i).pop_back();
+		    if(command.at(j).at(i) == "]") {
+			removal = true;
+		    }
+		    else command.at(j).at(i).pop_back();
 		    isBracket = false;
 		    immediate = false;
 		}
 	    }
-	    		
-	}	
+	    
+	    if(command.at(j).at(i).at(0) == '(') {
+		if(command.at(j).at(i).at(command.at(j).at(i).size() - 1) == ')');
+		else {
+		    std::string temp;
+		    std::getline(iss, temp, ')');
+		    int x = std::count(temp.begin(), temp.end(), '('); 
+		    temp += ")";
+		    int y = std::count(command.at(j).at(i).begin(), command.at(j).at(i).end(), '(');
+		    while(x > std::count(temp.begin(), temp.end(), ')')) {
+			std::getline(iss,temp, ')');
+			temp += ")";
+			x = std::count(temp.begin(), temp.end(), '(') + y; 
+			if(iss.eof()) {
+			    error = true;
+			    x = -1;
+			} 
+		    }
+		    command.at(j).at(i) += " ";
+		    command.at(j).at(i) += temp;
+		}
+	    }
+    	}
+	
 	if(removal) {
-	    command.at(j).at(i).pop_back();
+	    command.at(j).pop_back();
+	    i--;
 	}
+	
 	i++; 
 	
 	//resizes second vector
