@@ -37,7 +37,7 @@ will print
 > $ b  
 > $ d  
 but  
-> $ (echo a && echo b) || (echo c && echo d)
+> $ (echo a && echo b) || (echo c && echo d)  
 will print   
 > $ a  
 > $ b  
@@ -55,12 +55,12 @@ To compile use these commands:
 > $ ./bin/rshell
 
 To test if a file exists use the form:  
-> cmd = test [ arg ] [ path to file ]  
+> cmd = test [ arg ] [ path to file ]   
 The availiabe arguments are -e to test if the file exists, -d to test if its a directory, and -f to see if its a normal
-file. Also, you can use the form:  
-> cmd = [ [ arg ] [ path to file ] ]  
-Note that you must actually type the outer most [ ]. For example:  
-> [ -e /bin ]  
+file. Also, you can use the form:    
+> cmd = [ [ arg ] [ path to file ] ]     
+Note that you must actually type the outer most [ ]. For example:    
+> [ -e /bin ]    
 
 
 **Known Bugs**
@@ -70,5 +70,6 @@ statment or else things will break
 
 
 **Design**
+
 tokenClass.cpp handles parsing the string the user inputs into commands. main.cpp handles connectors and executes
 commands. If you want to make changes to the program then add or change functions in those files accordingly.
