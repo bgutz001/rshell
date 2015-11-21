@@ -99,14 +99,14 @@ Token::Token(std::string str, bool &error){
 		    isBracket = false;
 		    
 		}
-		if(immediate) {
-		    if(command.at(j).at(i).at(0) != '-') {
-			command.at(j).push_back(command.at(j).at(i));
-			command.at(j).at(i) = "-e";
-			i++;
-		    }
-		    immediate = false;
+	    }
+	    if(immediate) {
+		if(command.at(j).at(i).at(0) != '-') {
+		    command.at(j).push_back(command.at(j).at(i));
+		    command.at(j).at(i) = "-e";
+		    i++;
 		}
+		 immediate = false;
 	    }
 		    
 	    if(command.at(j).at(i).at(0) == '[') {
@@ -137,6 +137,7 @@ Token::Token(std::string str, bool &error){
 		}
 	    }
 	    
+	    if(command.at(j).at(i) == "test") { immediate = true; }
 	    if(command.at(j).at(i).at(0) == '(') {
 		if(command.at(j).at(i).at(command.at(j).at(i).size() - 1) == ')');
 		else {
