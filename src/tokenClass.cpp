@@ -16,7 +16,8 @@ Token::Token(std::string str, bool &error){
     if(std::string::npos != str.find('#')) {
         str.erase(str.find('#'));
     }
-    
+   
+    std::cout << "-------input--------\n" << str << std::endl; 
     error = false;
 
     // utitlize stringstream to tokenize
@@ -138,27 +139,43 @@ Token::Token(std::string str, bool &error){
 		if(command.at(j).at(i).at(command.at(j).at(i).size() - 1) == ')');
 		else {
 		    std::string temp;
+		    std::string tracker;
 		    std::getline(iss, temp, ')');
 		    int x = std::count(temp.begin(), temp.end(), '('); 
 		    temp += ")";
+		    tracker = temp;
 		    int y = std::count(command.at(j).at(i).begin(), command.at(j).at(i).end(), '(');
-		    while(x > std::count(temp.begin(), temp.end(), ')')) {
-			std::getline(iss,temp, ')');
-			temp += ")";
-			x = std::count(temp.begin(), temp.end(), '(') + y; 
-			if(iss.eof()) {
-			    error = true;
-			    x = -1;
-			} 
+		    std::cout << "\nX: " << x << "\nY: " << y << std::endl;
+		    if(iss.eof()) error = true;
+		    if(x + y  > std::count(tracker.begin(), tracker.end(), ')') && !iss.eof()) {
+			while(x + y  > std::count(tracker.begin(), tracker.end(), ')')) {
+			    std::getline(iss,temp, ')');
+			    temp += ")";
+			    tracker += temp;
+			    std::cout << "-------tracker----------\n" << tracker << std::endl;
+			    x = std::count(tracker.begin(), tracker.end(), '(') + y; 
+			    if(iss.eof()) {
+				//error = true;
+				x = -1;
+			    } 
+			}
+			tracker.pop_back();
 		    }
 		    command.at(j).at(i) += " ";
-		    command.at(j).at(i) += temp;
+		    command.at(j).at(i) += tracker;
+		    x = std::count(str.begin(), str.end(), ')'); 
+		    y = std::count(str.begin(), str.end(), '('); 
+		    if( x - y ) error = true;
+		    std::cout << "--------result---------\n" << command.at(j).at(i) << std::endl;
+		    std::cout << "-------error-flag------\n" << error << std::endl;
 		}
 	    }
     	}
 	
 	if(removal) {
 	    command.at(j).pop_back();
+	    if(command.at(j).size() == 0) command.at(j).push_back("");
+	    std::cout << command.at(j).at(i) << std::endl;
 	    i--;
 	}
 	
