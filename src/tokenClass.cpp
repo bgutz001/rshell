@@ -29,8 +29,8 @@ Token::Token(std::string str, bool &error){
     j = std::count(str.begin(), str.end(), '('); 
     if( i - j ) error = true;
     
-    if(str.find("((") != std::string::npos) error = true;
-    if(str.find("))") != std::string::npos) error = true; 
+//    if(str.find("((") != std::string::npos) error = true;
+//    if(str.find("))") != std::string::npos) error = true; 
     i = std::count(str.begin(), str.end(), ']'); 
     j = std::count(str.begin(), str.end(), '['); 
     if( i - j ) error = true;
