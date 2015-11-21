@@ -157,7 +157,7 @@ Token::Token(std::string str, bool &error){
 //			    std::cout << "-------tracker----------\n" << tracker << std::endl;
 			    x = std::count(tracker.begin(), tracker.end(), '(');  
 			}
-			tracker.pop_back();
+			//tracker.pop_back();
 		    }
 		    command.at(j).at(i) += " ";
 		    command.at(j).at(i) += tracker;
