@@ -28,7 +28,9 @@ Token::Token(std::string str, bool &error){
     i = std::count(str.begin(), str.end(), ')'); 
     j = std::count(str.begin(), str.end(), '('); 
     if( i - j ) error = true;
-     
+    
+    if(str.find("((") != std::string::npos) error = true;
+    if(str.find("))") != std::string::npos) error = true; 
     i = std::count(str.begin(), str.end(), ']'); 
     j = std::count(str.begin(), str.end(), '['); 
     if( i - j ) error = true;
@@ -47,7 +49,7 @@ Token::Token(std::string str, bool &error){
     bool immediate = false;
     bool removal = false;
     //while loop. this tkenizes then handles connectors
-    while(std::getline(iss, command.at(j).at(i), ' ')) {
+    while(std::getline(iss, command.at(j).at(i), ' ') && !error) {
 	if(command.at(j).at(i) == "" || command.at(j).at(i) == " ") removal = true;
 	else if((command.at(j).at(i) == "||" || command.at(j).at(i) == "&&" || command.at(j).at(i) == ";" || command.at(j).at(i).back() == ';') && !isBracket) {
 	    if(command.at(j).at(i) == "||") connector.push_back("ORTRUE");
