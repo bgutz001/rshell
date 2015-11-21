@@ -17,7 +17,7 @@ Token::Token(std::string str, bool &error){
         str.erase(str.find('#'));
     }
    
-    std::cout << "-------input--------\n" << str << std::endl; 
+//    std::cout << "-------input--------\n" << str << std::endl; 
     error = false;
 
     // utitlize stringstream to tokenize
@@ -145,14 +145,14 @@ Token::Token(std::string str, bool &error){
 		    temp += ")";
 		    tracker = temp;
 		    int y = std::count(command.at(j).at(i).begin(), command.at(j).at(i).end(), '(');
-		    std::cout << "\nX: " << x << "\nY: " << y << std::endl;
+//		    std::cout << "\nX: " << x << "\nY: " << y << std::endl;
 		    if(iss.eof()) error = true;
 		    if(x + y  > std::count(tracker.begin(), tracker.end(), ')') && !iss.eof()) {
 			while(x + y  > std::count(tracker.begin(), tracker.end(), ')')) {
 			    std::getline(iss,temp, ')');
 			    temp += ")";
 			    tracker += temp;
-			    std::cout << "-------tracker----------\n" << tracker << std::endl;
+//			    std::cout << "-------tracker----------\n" << tracker << std::endl;
 			    x = std::count(tracker.begin(), tracker.end(), '(') + y; 
 			    if(iss.eof()) {
 				//error = true;
@@ -166,8 +166,8 @@ Token::Token(std::string str, bool &error){
 		    x = std::count(str.begin(), str.end(), ')'); 
 		    y = std::count(str.begin(), str.end(), '('); 
 		    if( x - y ) error = true;
-		    std::cout << "--------result---------\n" << command.at(j).at(i) << std::endl;
-		    std::cout << "-------error-flag------\n" << error << std::endl;
+//		    std::cout << "--------result---------\n" << command.at(j).at(i) << std::endl;
+//		    std::cout << "-------error-flag------\n" << error << std::endl;
 		}
 	    }
     	}
@@ -175,8 +175,9 @@ Token::Token(std::string str, bool &error){
 	if(removal) {
 	    command.at(j).pop_back();
 	    if(command.at(j).size() == 0) command.at(j).push_back("");
-	    std::cout << command.at(j).at(i) << std::endl;
+//	    std::cout << command.at(j).at(i) << std::endl;
 	    i--;
+	    removal = false;
 	}
 	
 	i++; 
