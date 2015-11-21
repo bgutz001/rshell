@@ -30,8 +30,8 @@ is equivalent to:
 > $ ls -a; echo hello; mkdir test
 
 There is no limit it to the number of commands you can chain. You can also use ( ) to group commands together. For
-example:  
-> $ echo a && echo b || echo c && echo d  
+example:   
+> $ echo a && echo b || echo c && echo d   
 will print  
 > $ a  
 > $ b  
