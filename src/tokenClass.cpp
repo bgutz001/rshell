@@ -42,10 +42,12 @@ Token::Token(std::string str, bool &error){
     //setup command vec size
     command.resize(1,std::vector<std::string>(1, ""));
     bool double_connectors = false;    
-
+    bool isBracket = false;
+    bool immediate = false;
+    bool removal = false;
     //while loop. this tokenizes then handles connectors
     while(std::getline(iss, command.at(j).at(i), ' ')) {
-	if((command.at(j).at(i) == "||" || command.at(j).at(i) == "&&" || command.at(j).at(i) == ";" || command.at(j).at(i).back() == ';')) {
+	if((command.at(j).at(i) == "||" || command.at(j).at(i) == "&&" || command.at(j).at(i) == ";" || command.at(j).at(i).back() == ';') && !isBracket) {
 	    if(command.at(j).at(i) == "||") connector.push_back("ORTRUE");
 	    if(command.at(j).at(i) == "&&") connector.push_back("ANDTRUE");
 	    if(command.at(j).at(i) == ";")  connector.push_back("CONTINUE");
@@ -86,16 +88,59 @@ Token::Token(std::string str, bool &error){
 		    command.at(j).at(i) += temp;
 		}
 	    }			
-			
+	    if(isBracket) {
+		if(command.at(j).at(i).at(command.at(j).at(i).size() - 1) == ']') {
+		    isBracket = false;
+		    removal = true;
+		}
+		if(immediate) {
+		    if(command.at(j).at(i).at(0) != '-') {
+			command.at(j).push_back(command.at(j).at(i));
+			command.at(j).at(i) = "-e";
+			i++;
+		    }
+		    immediate = false;
+		}
+	    }
+		    
+	    if(command.at(j).at(i).at(0) == '[') {
+		isBracket = true;
+		immediate = true;
+		if(command.at(j).at(i) == "[") {
+		    command.at(j).at(i) = "test";
+		}
+		else {
+		    command.at(j).push_back(command.at(j).at(i));
+		    command.at(j).at(i) = "test";
+		    i++;
+		    command.at(j).at(i).erase(command.at(j).at(i).begin());
+		    if(command.at(j).at(i).at(0) != '-') {
+			command.at(j).push_back(command.at(j).at(i));
+			command.at(j).at(i) = "-e";
+			i++;
+			immediate = false;
+		    }
+		}
+		if(command.at(j).at(i).at(command.at(j).at(i).size() - 1) == ']') {
+		    command.at(j).at(i).pop_back();
+		    isBracket = false;
+		    immediate = false;
+		}
+	    }
+	    		
 	}	
+	if(removal) {
+	    command.at(j).at(i).pop_back();
+	}
 	i++; 
-			
+	
 	//resizes second vector
 	if(i == command.at(j).size()) {
 	   command.at(j).push_back("");
 	}
-    }  
-      
+    }
+  
+    if(isBracket) error = true;		
     //deletes hanging vector
     command.at(j).pop_back();
     connector.push_back("STOP");
