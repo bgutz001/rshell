@@ -47,13 +47,20 @@ bool process(std::string c) {
         std::cout << "Error: Syntax Error" << std::endl;
         return false;
     }
+    
+    // Print commands for debugging
+    for (int i = 0; i < fullCommand.getNumCommand(); ++i) {
+        for (int j = 0; fullCommand.getCommand(i)[j] != 0; ++j) {
+            std::cout << fullCommand.getCommand(i)[j] << ' ';
+        }
+        std::cout << std::endl;
+    }
 
     //execute commands
     for (int i = 0; i < fullCommand.getNumCommand(); ++i) {
         result = false;
         if (fullCommand.getCommand(i)[0] != 0) {
             std::string com(fullCommand.getCommand(i)[0]);
-            std::cout << "command is: " << com << std::endl;
 
             // Handle exit command
             if (com == "exit") exit(EXIT_SUCCESS); 
@@ -65,6 +72,7 @@ bool process(std::string c) {
 
             // Check if command is in parentheses
             else if (com.find('(') != std::string::npos) {
+                std::cout << "Recursive call: " << com.substr(1, com.size() - 2) << std::endl;
                 result = process(com.substr(1, com.size() - 2));
             }
             else { 
