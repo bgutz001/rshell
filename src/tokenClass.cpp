@@ -150,16 +150,12 @@ Token::Token(std::string str, bool &error){
 //		    std::cout << "\nX: " << x << "\nY: " << y << std::endl;
 		    if(iss.eof()) error = true;
 		    if(x + y  > std::count(tracker.begin(), tracker.end(), ')') && !iss.eof()) {
-			while(x + y  > std::count(tracker.begin(), tracker.end(), ')')) {
+			while(x + y > std::count(tracker.begin(), tracker.end(), ')') && !iss.eof()) {
 			    std::getline(iss,temp, ')');
 			    temp += ")";
 			    tracker += temp;
 //			    std::cout << "-------tracker----------\n" << tracker << std::endl;
-			    x = std::count(tracker.begin(), tracker.end(), '(') + y; 
-			    if(iss.eof()) {
-				//error = true;
-				x = -1;
-			    } 
+			    x = std::count(tracker.begin(), tracker.end(), '(');  
 			}
 			tracker.pop_back();
 		    }
