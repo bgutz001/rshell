@@ -48,7 +48,6 @@ bool process(std::string c) {
         return false;
     }
     
-    /*
     // Print commands for debugging
     for (int i = 0; i < fullCommand.getNumCommand(); ++i) {
         for (int j = 0; fullCommand.getCommand(i)[j] != 0; ++j) {
@@ -56,7 +55,6 @@ bool process(std::string c) {
         }
         std::cout << std::endl;
     }
-    */
 
     //execute commands
     for (int i = 0; i < fullCommand.getNumCommand(); ++i) {
@@ -74,8 +72,15 @@ bool process(std::string c) {
 
             // Check if command is in parentheses
             else if (com.find('(') != std::string::npos) {
-                // std::cout << "Recursive call: " << com.substr(1, com.size() - 2) << std::endl;
-                result = process(com.substr(1, com.size() - 2));
+                std::cout << "Recursive call: " << com.substr(1, com.find_last_of(')') - 1) << std::endl;
+                result = process(com.substr(1, com.find_last_of(')') - 1));
+                if (result) {
+                    com.replace(0, com.find_last_of(')'), "true");
+                }
+                else {
+                    com.replace(0, com.find_last_of(')'), "false");
+                }
+                result = process(com);
             }
             else { 
                 result = (execute(fullCommand.getCommand(i)) == 0);
@@ -201,7 +206,7 @@ bool test (char* command[]) {
     else if (strcmp(command[1], "-d") == 0) {
         return S_ISDIR(info.st_mode);
     }
-    
+
     std::cout << "Unrecognized test flag" << std::endl;
     return false;
 }
