@@ -48,6 +48,7 @@ bool process(std::string c) {
         return false;
     }
     
+    /*
     // Print commands for debugging
     for (int i = 0; i < fullCommand.getNumCommand(); ++i) {
         for (int j = 0; fullCommand.getCommand(i)[j] != 0; ++j) {
@@ -55,6 +56,7 @@ bool process(std::string c) {
         }
         std::cout << std::endl << std::endl;
     }
+    */
 
     //execute commands
     for (int i = 0; i < fullCommand.getNumCommand(); ++i) {

@@ -29,7 +29,18 @@ is equivalent to:
 
 > $ ls -a; echo hello; mkdir test
 
-There is no limit it to the number of commands you can chain.
+There is no limit it to the number of commands you can chain. You can also use ( ) to group commands together. For
+example:  
+> $ echo a && echo b || echo c && echo d  
+will print  
+> $ a  
+> $ b  
+> $ d  
+but  
+> $ (echo a && echo b) || (echo c && echo d)
+will print   
+> $ a  
+> $ b  
 
 To compile use these commands:
 
@@ -56,3 +67,8 @@ Note that you must actually type the outer most [ ]. For example:
 
 1. If you want to print out special characters such as && || ; [ ] or ( ) make sure you use " " around the whole echo
 statment or else things will break
+
+
+**Design**
+tokenClass.cpp handles parsing the string the user inputs into commands. main.cpp handles connectors and executes
+commands. If you want to make changes to the program then add or change functions in those files accordingly.

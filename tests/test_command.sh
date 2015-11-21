@@ -47,7 +47,7 @@ echo --------------------------------------------------------------------------
 echo "Testing test with -d flag"
 echo "test -d ../bin && echo is dir"
 echo "Expecting: "
-test -d ../bin/rshell && echo is dir
+test -d ../bin && echo is dir
 echo "Result"
 ../bin/rshell <<EOF
 test -d ../bin && echo is dir
@@ -61,7 +61,7 @@ echo "Expecting: "
 test -d ../bin/rshell && echo is dir
 echo "Result"
 ../bin/rshell <<EOF
-test -d ../bin && echo is dir
+test -d ../bin/rshell && echo is dir
 exit
 EOF
 echo --------------------------------------------------------------------------
@@ -137,7 +137,7 @@ echo --------------------------------------------------------------------------
 echo "Testing [ ] with -d flag"
 echo "[ -d ../bin ] && echo is dir"
 echo "Expecting: "
-[ -d ../bin/rshell ] && echo is dir
+[ -d ../bin ] && echo is dir
 echo "Result"
 ../bin/rshell <<EOF
 [ -d ../bin ] && echo is dir
@@ -151,7 +151,7 @@ echo "Expecting: "
 [ -d ../bin/rshell ] && echo is dir
 echo "Result"
 ../bin/rshell <<EOF
-[ -d ../bin ] && echo is dir
+[ -d ../bin/rshell ] && echo is dir
 exit
 EOF
 echo --------------------------------------------------------------------------
